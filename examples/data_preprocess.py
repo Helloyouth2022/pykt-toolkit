@@ -1,8 +1,18 @@
 import os, sys
+
+# 这是为了不通过python 的 pip下载到包管理器中。而是直接通过使用pykt-toolkit文件夹下的pykt包
+# os.path.dirname(__file__) 得到的是当前程序启动文件的所在的目录的路径
+pykt_toolkit_dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # ...xxx/xxx/pykt-toolkit
+pykt_dir_path = os.path.join(pykt_toolkit_dir_path, 'pykt')  # ...xxx/xxx/pykt-toolkit/pykt
+
+sys.path.append(pykt_dir_path)
+sys.path.append(pykt_toolkit_dir_path)
+
 import argparse
 from pykt.preprocess.split_datasets import main as split_concept
 from pykt.preprocess.split_datasets_que import main as split_question
 from pykt.preprocess import data_proprocess, process_raw_data
+
 
 dname2paths = {
     "assist2009": "../data/assist2009/skill_builder_data_corrected_collapsed.csv",
@@ -20,7 +30,13 @@ dname2paths = {
     "ednet5w": "../data/ednet/",
     "peiyou": "../data/peiyou/grade3_students_b_200.csv"
 }
+
+dname2paths = {
+    k : pykt_toolkit_dir_path + v[2:]  for k, v in dname2paths.items()
+}
+
 configf = "../configs/data_config.json"
+configf = pykt_toolkit_dir_path + configf[2:]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

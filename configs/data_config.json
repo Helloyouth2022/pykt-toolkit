@@ -1,6 +1,6 @@
 {
     "assist2015": {
-        "dpath": "../data/assist2015",
+        "dpath": "/tmp/JJK/pykt-toolkit/data/assist2015",
         "num_q": 0,
         "num_c": 100,
         "input_type": [
