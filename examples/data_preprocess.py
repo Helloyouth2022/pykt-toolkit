@@ -32,7 +32,7 @@ dname2paths = {
 }
 
 dname2paths = {
-    k : pykt_toolkit_dir_path + v[2:]  for k, v in dname2paths.items()
+    k : pykt_toolkit_dir_path + v[2:]  for k, v in dname2paths.items()  # 把原来的.. 改为绝对路径
 }
 
 configf = "../configs/data_config.json"
