@@ -14,7 +14,7 @@ def read_data_from_csv(read_file, write_file):
     df["index"] = range(df.shape[0])
 
     df = df.dropna(subset=["user_id", "log_id", "sequence_id", "correct"])
-    df = df[df['correct'].isin([0,1])]#filter responses
+    df = df[df['correct'].isin([0,1])]  #filter responses
     df['correct'] = df['correct'].astype(int)
 
     ins, us, qs, cs, avgins, avgcq, na = sta_infos(df, KEYS, stares)

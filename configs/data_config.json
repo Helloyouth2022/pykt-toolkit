@@ -61,7 +61,7 @@
         "test_original_file_quelevel": "test_quelevel.csv"
     },
     "assist2009": {
-        "dpath": "../data/assist2009",
+        "dpath": "/tmp/JJK/pykt-toolkit/data/assist2009",
         "num_q": 17737,
         "num_c": 123,
         "input_type": [

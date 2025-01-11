@@ -2,7 +2,7 @@ import os, sys
 
 def process_raw_data(dataset_name,dname2paths):
     readf = dname2paths[dataset_name]
-    dname = "/".join(readf.split("/")[0:-1])
+    dname = "/".join(readf.split("/")[0:-1])   # get the directory name
     writef = os.path.join(dname, "data.txt")
     print(f"Start preprocessing data: {dataset_name}")
     if dataset_name == "assist2009":
@@ -41,9 +41,9 @@ def process_raw_data(dataset_name,dname2paths):
         read_data_from_csv(readf, writef, dq2c)
     elif dataset_name in ["ednet5w","ednet"]:
         dname, writef = read_data_from_csv(readf, writef, dataset_name=dataset_name)
-    elif dataset_name != "nips_task34":#default case
+    elif dataset_name != "nips_task34":   #default case
         read_data_from_csv(readf, writef)
-    else:
+    else:  # nips_task34
         metap = os.path.join(dname, "metadata")
         read_data_from_csv(readf, metap, "task_3_4", writef)
      

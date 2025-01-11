@@ -21,7 +21,7 @@ def read_data(fname, min_seq_len=3, response_set=[0, 1]):
         dcur = dict()
         while i < len(lines):
             line = lines[i].strip()
-            if i % 6 == 0:  # stuid
+            if i % 6 == 0:  # (stuid, seq_len)
                 effective_keys.add("uid")
                 tmps = line.split(",")
                 if "(" in tmps[0]:
@@ -77,7 +77,7 @@ def read_data(fname, min_seq_len=3, response_set=[0, 1]):
                     effective_keys.add("timestamps")
                     ts = line.split(",")
                 dcur["timestamps"] = ts
-            elif i % 6 == 5:  # usets
+            elif i % 6 == 5:  # used times
                 usets = []
                 if line.find("NA") == -1:
                     effective_keys.add("usetimes")
@@ -162,7 +162,7 @@ def id_mapping(df):
 
 
 def train_test_split(df, test_ratio=0.2):
-    df = df.sample(frac=1.0, random_state=1024)
+    df = df.sample(frac=1.0, random_state=1024)  # 因为设置了参数frac = 1， 所以相当于shuffle操作
     datanum = df.shape[0]
     test_num = int(datanum * test_ratio)
     train_num = datanum - test_num
@@ -218,7 +218,7 @@ def generate_sequences(df, effective_keys, min_seq_len=3, maxlen=200, pad_val=-1
 
         rest, lenrs = len(dcur["responses"]), len(dcur["responses"])
         j = 0
-        while lenrs >= j + maxlen:
+        while lenrs >= j + maxlen:  # 如果一个序列长度大于maxlen，则进行切分，即说一个序列被切分成多个子序列
             rest = rest - (maxlen)
             for key in effective_keys:
                 dres.setdefault(key, [])
@@ -262,8 +262,9 @@ def generate_window_sequences(df, effective_keys, maxlen=200, pad_val=-1):
     for i, row in df.iterrows():
         dcur = save_dcur(row, effective_keys)
         lenrs = len(dcur["responses"])
-        if lenrs > maxlen:
-            for key in effective_keys:
+        if lenrs > maxlen:  # 如果 lenrs 大于最大长度 maxlen，则生成滑动窗口序列
+            # 将前 maxlen 个响应添加到 dres 字典中，并更新 "selectmasks" 列表。
+            for key in effective_keys:  
                 dres.setdefault(key, [])
                 if key not in ONE_KEYS:
                     # [str(k) for k in dcur[key][0: maxlen]]))
@@ -271,6 +272,7 @@ def generate_window_sequences(df, effective_keys, maxlen=200, pad_val=-1):
                 else:
                     dres[key].append(dcur[key])
             dres["selectmasks"].append(",".join(["1"] * maxlen))
+            # 使用 for 循环生成剩余的滑动窗口序列：将每个滑动窗口的响应添加到 dres 字典中，并更新 "selectmasks" 列表。
             for j in range(maxlen+1, lenrs+1):
                 for key in effective_keys:
                     dres.setdefault(key, [])
@@ -281,7 +283,7 @@ def generate_window_sequences(df, effective_keys, maxlen=200, pad_val=-1):
                         dres[key].append(dcur[key])
                 dres["selectmasks"].append(
                     ",".join([str(pad_val)] * (maxlen - 1) + ["1"]))
-        else:
+        else:  # 如果 lenrs 小于等于 maxlen，则生成一个长度为 maxlen 的序列
             for key in effective_keys:
                 dres.setdefault(key, [])
                 if key not in ONE_KEYS:

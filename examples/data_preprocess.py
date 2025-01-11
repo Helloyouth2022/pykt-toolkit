@@ -13,7 +13,7 @@ from pykt.preprocess.split_datasets import main as split_concept
 from pykt.preprocess.split_datasets_que import main as split_question
 from pykt.preprocess import data_proprocess, process_raw_data
 
-
+# 字典 dname2paths包含不同数据集的路径，其中key是数据集的名称，value是对应数据集的路径
 dname2paths = {
     "assist2009": "../data/assist2009/skill_builder_data_corrected_collapsed.csv",
     "assist2012": "../data/assist2012/2012-2013-data-with-predictions-4-final.csv",
@@ -35,6 +35,7 @@ dname2paths = {
     k : pykt_toolkit_dir_path + v[2:]  for k, v in dname2paths.items()  # 把原来的.. 改为绝对路径
 }
 
+# 配置文件 data_config.json 的路径
 configf = "../configs/data_config.json"
 configf = pykt_toolkit_dir_path + configf[2:]
 
@@ -47,6 +48,15 @@ if __name__ == "__main__":
     parser.add_argument("-k","--kfold", type=int, default=5)
     # parser.add_argument("--mode", type=str, default="concept",help="question or concept")
     args = parser.parse_args()
+
+    is_debug = True
+    if is_debug:  # 若是直接运行这个脚本，则可以自定义参数（不从终端启动脚本）
+        args.dataset_name = "assist2009"
+        args.file_path = "../data/peiyou/grade3_students_b_200.csv"
+        args.min_seq_len = 3
+        args.maxlen = 200
+        args.kfold = 5
+        # args.mode = "concept"
 
     print(args)
 

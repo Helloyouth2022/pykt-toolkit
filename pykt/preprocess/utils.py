@@ -29,7 +29,7 @@ def sta_infos(df, keys, stares, split_str="_"):
             ctotal += len(dq2c[q])
         
         avgcq = round(ctotal / qtotal, 4)
-    avgins = round(df.shape[0] / len(uids), 4)
+    avgins = round(df.shape[0] / len(uids), 4)  # avg interactions per user
     ins, us, qs, cs = df.shape[0], len(uids), "NA", len(cids)
     avgcqf, naf = "NA", "NA"
     if len(keys) > 2:
