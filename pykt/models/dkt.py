@@ -9,7 +9,7 @@ class DKT(Module):
     def __init__(self, num_c, emb_size, dropout=0.1, emb_type='qid', emb_path="", pretrain_dim=768):
         super().__init__()
         self.model_name = "dkt"
-        self.num_c = num_c
+        self.num_c = num_c  # 知识组件的数量（概念concepts 的数量）
         self.emb_size = emb_size
         self.hidden_size = emb_size
         self.emb_type = emb_type

@@ -122,8 +122,8 @@ def model_forward(model, data, rel=None):
         # cat = torch.cat((d["at_seqs"][:,0:1], dshft["at_seqs"]), dim=1)
         cit = torch.cat((dcur["itseqs"][:,0:1], dcur["shft_itseqs"]), dim=1)
     if model_name in ["dkt"]:
-        y = model(c.long(), r.long())
-        y = (y * one_hot(cshft.long(), model.num_c)).sum(-1)
+        y = model(c.long(), r.long())   
+        y = (y * one_hot(cshft.long(), model.num_c)).sum(-1)  # 
         ys.append(y) # first: yshft
     elif model_name == "dkt+":
         y = model(c.long(), r.long())
@@ -206,13 +206,16 @@ def train_model(model, train_loader, valid_loader, num_epochs, opt, ckpt_path, t
         scheduler = torch.optim.lr_scheduler.StepLR(opt, 10, gamma=0.5)
     for i in range(1, num_epochs + 1):
         loss_mean = []
+
+        if model.model_name in que_type_models and model.model_name not in ["lpkt", "rkt"]:
+                model.model.train()
+        else:
+            model.train()   # 调整为训练模式
+
         for data in train_loader:
             train_step+=1
-            if model.model_name in que_type_models and model.model_name not in ["lpkt", "rkt"]:
-                model.model.train()
-            else:
-                model.train()
-            if model.model_name=='rkt':
+
+            if rel is not None:  # model.model_name=='rkt':
                 loss = model_forward(model, data, rel)
             else:
                 loss = model_forward(model, data)

@@ -42,8 +42,8 @@ def main(params):
         params["fold"], params["emb_type"], params["save_dir"]
         
     debug_print(text = "load config files.",fuc_name="main")
-    
-    with open("../configs/kt_config.json") as f:
+    path_kt_config = pykt_toolkit_dir_path + "/configs/kt_config.json"
+    with open(path_kt_config) as f:
         config = json.load(f)
         train_config = config["train_config"]
         if model_name in ["dkvmn","deep_irt", "sakt", "saint","saint++", "akt","folibikt", "atkt", "lpkt", "skvmn", "dimkt"]:
@@ -66,7 +66,8 @@ def main(params):
         # model_config = {"d_model": params["d_model"], "n_blocks": params["n_blocks"], "dropout": params["dropout"], "d_ff": params["d_ff"]}
     batch_size, num_epochs, optimizer = train_config["batch_size"], train_config["num_epochs"], train_config["optimizer"]
 
-    with open("../configs/data_config.json") as fin:
+    path_data_config = pykt_toolkit_dir_path + "/configs/data_config.json"
+    with open(path_data_config) as fin:
         data_config = json.load(fin)
     if 'maxlen' in data_config[dataset_name]:#prefer to use the maxlen in data config
         train_config["seq_len"] = data_config[dataset_name]['maxlen']
@@ -148,14 +149,14 @@ def main(params):
     else:
         testauc, testacc, window_testauc, window_testacc, validauc, validacc, best_epoch = train_model(model, train_loader, valid_loader, num_epochs, opt, ckpt_path, None, None, save_model)
     
+    model_save_path = os.path.join(ckpt_path, emb_type+"_model.ckpt")
     if save_model:
         best_model = init_model(model_name, model_config, data_config[dataset_name], emb_type)
-        net = torch.load(os.path.join(ckpt_path, emb_type+"_model.ckpt"))
+        net = torch.load(model_save_path)
         best_model.load_state_dict(net)
 
     print("fold\tmodelname\tembtype\ttestauc\ttestacc\twindow_testauc\twindow_testacc\tvalidauc\tvalidacc\tbest_epoch")
     print(str(fold) + "\t" + model_name + "\t" + emb_type + "\t" + str(round(testauc, 4)) + "\t" + str(round(testacc, 4)) + "\t" + str(round(window_testauc, 4)) + "\t" + str(round(window_testacc, 4)) + "\t" + str(validauc) + "\t" + str(validacc) + "\t" + str(best_epoch))
-    model_save_path = os.path.join(ckpt_path, emb_type+"_model.ckpt")
     print(f"end:{datetime.datetime.now()}")
     
     if params['use_wandb']==1:
