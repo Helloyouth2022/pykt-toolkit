@@ -35,3 +35,17 @@ class DKT(Module):
         y = torch.sigmoid(y)
 
         return y
+    
+
+if __name__ == "__main__":
+    batch_size = 256
+    n = 200
+    num_c = 100
+    emb_size = 200
+
+    q = torch.tensor(np.random.randint(0,num_c,size=(batch_size, n-1)))
+    r = torch.tensor(np.random.randint(0,2,size=(batch_size, n-1)))
+
+    model = DKT(num_c, emb_size)
+    y = model(q, r)
+    print(y.shape)
