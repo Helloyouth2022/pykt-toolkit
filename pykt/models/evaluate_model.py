@@ -203,21 +203,21 @@ def early_fusion(curhs, model, model_name):
 
 def late_fusion(dcur, curdf, fusion_type=["mean", "vote", "all"]):
     high, low = [], []
-    for pred in curdf["preds"]:
+    for pred in curdf["preds"]:  # 根据 KC预测结果（概率分数）是否大于等于 0.5，将其分为高预测值 (high) 和低预测值 (low)
         if pred >= 0.5:
             high.append(pred)
         else:
             low.append(pred)
 
-    if "mean" in fusion_type:
+    if "mean" in fusion_type:  # 计算所有 KC预测结果的平均值，并将其添加到 dcur 字典中
         dcur.setdefault("late_mean", [])
         dcur["late_mean"].append(round(float(curdf["preds"].mean()), 4))
-    if "vote" in fusion_type:
+    if "vote" in fusion_type:  # 根据高预测值和低预测值的数量决定最终的预测结果（问题级别），并将其添加到 dcur 字典中
         dcur.setdefault("late_vote", [])
         correctnum = list(curdf["preds"]>=0.5).count(True)
         late_vote = np.mean(high) if correctnum / len(curdf["preds"]) >= 0.5 else np.mean(low)
         dcur["late_vote"].append(late_vote)
-    if "all" in fusion_type:
+    if "all" in fusion_type:   # 对应原论文的 “LF-S” KC预测融合类型，即当所有的 KC预测结果都为正时才预测（问题级别的预测）为 正
         dcur.setdefault("late_all", [])
         late_all = np.mean(high) if correctnum == len(curdf["preds"]) else np.mean(low)
         dcur["late_all"].append(late_all)
@@ -276,7 +276,7 @@ def group_fusion(dmerge, model, model_name, fusion_type, fout):
     hs, sms, cq, cc, rs, ps, qidxs, rests, orirows = dmerge["hs"], dmerge["sm"], dmerge["cq"], dmerge["cc"], dmerge["cr"], dmerge["y"], dmerge["qidxs"], dmerge["rests"], dmerge["orirow"]
     if cq.shape[1] == 0:
         cq = cc
-
+    # 列举出能够使用"early"融合类型的模型
     hasearly = ["dkvmn","deep_irt", "skvmn", "kqn", "dtransformer", "akt","extrakt", "folibikt","simplekt","stablekt", "bakt_time", "sparsekt", "saint", "sakt", "hawkes", "akt_vector", "akt_norasch", "akt_mono", "akt_attn", "aktattn_pos", "aktmono_pos", "akt_raschx", "akt_raschy", "aktvec_raschx", "lpkt"]
     
     alldfs, drest = [], dict() # not predict infos!
