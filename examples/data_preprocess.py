@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     is_debug = True
     if is_debug:  # 若是直接运行这个脚本，则可以自定义参数（不从终端启动脚本）
-        args.dataset_name = "assist2009"
+        args.dataset_name = "algebra2005"
         args.file_path = "../data/peiyou/grade3_students_b_200.csv"
         args.min_seq_len = 3
         args.maxlen = 200

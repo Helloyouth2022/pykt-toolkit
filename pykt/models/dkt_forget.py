@@ -63,3 +63,31 @@ class CIntegration(Module):
         theta = torch.mul(vt, Cct)
         theta = torch.cat((theta, ct), -1)
         return theta
+
+
+if __name__ == "__main__":
+    from torch.nn.functional import one_hot
+    import numpy as np
+
+    num_c, num_rgap, num_sgap, num_pcount, emb_size = 112, 20, 20, 9, 200
+    batch_size = 2
+    n = 200
+
+    model = DKTForget(num_c, num_rgap, num_sgap, num_pcount, emb_size)
+
+    q = torch.tensor(np.random.randint(0,num_c,size=(batch_size, n-1)))
+    cshft = torch.tensor(np.random.randint(0,num_c,size=(batch_size, n-1)))
+    r = torch.tensor(np.random.randint(0,2,size=(batch_size, n-1)))
+
+    dgaps = {
+        "rgaps": torch.tensor(np.random.randint(0,num_rgap,size=(batch_size, n-1))),
+        "shft_rgaps": torch.tensor(np.random.randint(0,num_rgap,size=(batch_size, n-1))),
+        "sgaps": torch.tensor(np.random.randint(0,num_sgap,size=(batch_size, n-1))),
+        "shft_sgaps": torch.tensor(np.random.randint(0,num_sgap,size=(batch_size, n-1))),
+        "pcounts": torch.tensor(np.random.randint(0,num_pcount,size=(batch_size, n-1))),
+        "shft_pcounts": torch.tensor(np.random.randint(0,num_pcount,size=(batch_size, n-1)))
+    }
+    y = model(q, r, dgaps)
+    print(y.shape)
+    y = (y * one_hot(cshft.long(), model.num_c)).sum(-1)
+    print(y.shape)

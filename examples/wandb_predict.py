@@ -1,9 +1,15 @@
-import os
+import os, sys
 import argparse
 import json
 import copy
 import torch
 import pandas as pd
+
+pykt_toolkit_dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # ...xxx/xxx/pykt-toolkit
+pykt_dir_path = os.path.join(pykt_toolkit_dir_path, 'pykt')  # ...xxx/xxx/pykt-toolkit/pykt
+
+sys.path.append(pykt_dir_path)
+sys.path.append(pykt_toolkit_dir_path)
 
 from pykt.models import evaluate,evaluate_question,load_model
 from pykt.datasets import init_test_datasets
@@ -11,7 +17,8 @@ from pykt.datasets import init_test_datasets
 device = "cpu" if not torch.cuda.is_available() else "cuda"
 os.environ['CUBLAS_WORKSPACE_CONFIG']=':4096:2'
 
-with open("../configs/wandb.json") as fin:
+path_wandb = os.path.join(pykt_toolkit_dir_path, 'configs/wandb.json')
+with open(path_wandb) as fin:
     wandb_config = json.load(fin)
 
 def main(params):
@@ -36,7 +43,8 @@ def main(params):
             seq_len = train_config["seq_len"]
             model_config["seq_len"] = seq_len   
 
-    with open("../configs/data_config.json") as fin:
+    path_data_config = os.path.join(pykt_toolkit_dir_path, "configs/data_config.json")
+    with open(path_data_config) as fin:
         curconfig = copy.deepcopy(json.load(fin))
         data_config = curconfig[dataset_name]
         data_config["dataset_name"] = dataset_name
@@ -134,4 +142,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
     params = vars(args)
+
+    debug = True
+    if debug:
+        params['save_dir'] = '/tmp/JJK/pykt-toolkit/examples/saved_model/assist2015_dkt_qid_saved_model_42_0_0.2_200_0.001_1_1_9dd5a89b-9afc-445c-816e-52e20e43d560'
+
     main(params)

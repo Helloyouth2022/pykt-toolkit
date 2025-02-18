@@ -111,7 +111,7 @@ def extend_multi_concepts(df, effective_keys):
             dextend_infos[key] = row[key].split(",")
         dextend_res = dict()
         for i in range(len(dextend_infos["questions"])):
-            dextend_res.setdefault("is_repeat", [])
+            dextend_res.setdefault("is_repeat", [])   # Insert key("is_repeat") with a value of default if key is not in the dictionary.
             if dextend_infos["concepts"][i].find("_") != -1:
                 ids = dextend_infos["concepts"][i].split("_")
                 dextend_res.setdefault("concepts", [])

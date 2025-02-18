@@ -29,7 +29,7 @@
         "test_original_file_quelevel": "test_quelevel.csv"
     },
     "algebra2005": {
-        "dpath": "../data/algebra2005",
+        "dpath": "/tmp/JJK/pykt-toolkit/data/algebra2005",
         "num_q": 173113,
         "num_c": 112,
         "input_type": [
