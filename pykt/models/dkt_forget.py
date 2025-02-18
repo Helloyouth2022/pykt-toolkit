@@ -43,9 +43,9 @@ class DKTForget(Module):
 class CIntegration(Module):
     def __init__(self, num_rgap, num_sgap, num_pcount, emb_dim) -> None:
         super().__init__()
-        self.rgap_eye = torch.eye(num_rgap)
-        self.sgap_eye = torch.eye(num_sgap)
-        self.pcount_eye = torch.eye(num_pcount)
+        self.rgap_eye = torch.eye(num_rgap).to(device)
+        self.sgap_eye = torch.eye(num_sgap).to(device)
+        self.pcount_eye = torch.eye(num_pcount).to(device)
 
         ntotal = num_rgap + num_sgap + num_pcount
         self.cemb = Linear(ntotal, emb_dim, bias=False)
@@ -74,9 +74,10 @@ if __name__ == "__main__":
     n = 200
 
     model = DKTForget(num_c, num_rgap, num_sgap, num_pcount, emb_size)
+    model = model.to(device)
 
     q = torch.tensor(np.random.randint(0,num_c,size=(batch_size, n-1)))
-    cshft = torch.tensor(np.random.randint(0,num_c,size=(batch_size, n-1)))
+    cshft = torch.tensor(np.random.randint(0,num_c,size=(batch_size, n-1))).to(device)
     r = torch.tensor(np.random.randint(0,2,size=(batch_size, n-1)))
 
     dgaps = {
