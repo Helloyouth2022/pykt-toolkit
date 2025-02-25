@@ -80,7 +80,7 @@ if __name__ == "__main__":
     cshft = torch.tensor(np.random.randint(0,num_c,size=(batch_size, n-1))).to(device)
     r = torch.tensor(np.random.randint(0,2,size=(batch_size, n-1)))
 
-    dgaps = {
+    dgaps = {  # 注意数据是随机生成的，数值范围符合实际但数值大小排列不实际
         "rgaps": torch.tensor(np.random.randint(0,num_rgap,size=(batch_size, n-1))),
         "shft_rgaps": torch.tensor(np.random.randint(0,num_rgap,size=(batch_size, n-1))),
         "sgaps": torch.tensor(np.random.randint(0,num_sgap,size=(batch_size, n-1))),

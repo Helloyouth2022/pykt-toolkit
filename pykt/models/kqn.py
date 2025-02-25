@@ -51,8 +51,8 @@ class KQN(nn.Module):
         self.drop_layer = nn.Dropout(dropout)
         self.sigmoid = nn.Sigmoid()
         # self.loss_fn = nn.BCEWithLogitsLoss(reduction='mean')
-        self.two_eye = torch.eye(2*n_skills)
-        self.eye = torch.eye(n_skills)
+        self.two_eye = torch.eye(2*n_skills).to(device)
+        self.eye = torch.eye(n_skills).to(device)
 
     
     def init_hidden(self, batch_size: int):
@@ -74,8 +74,8 @@ class KQN(nn.Module):
         emb_type = self.emb_type
         # print(f"in_data: {in_data.shape}")
         if emb_type == "qid":
-            encoded_knowledge = self.encode_knowledge(in_data.to(device)) # (batch_size, max_seq_len, n_hidden)
-        encoded_skills = self.encode_skills(next_skills.to(device)) # (batch_size, max_seq_len, n_hidden)
+            encoded_knowledge = self.encode_knowledge(in_data) # (batch_size, max_seq_len, n_hidden)
+        encoded_skills = self.encode_skills(next_skills) # (batch_size, max_seq_len, n_hidden)
         encoded_knowledge = self.drop_layer(encoded_knowledge)
         
         # query the knowledge state with respect to the encoded skills
@@ -101,3 +101,17 @@ class KQN(nn.Module):
         encoded_skills = self.skill_encoder(next_skills) # (batch_size, max_seq_len, n_hidden)
         encoded_skills = F.normalize(encoded_skills, p=2, dim=2) # L2-normalize
         return encoded_skills
+
+
+if __name__ == '__main__':
+    n_skills, n_hidden, n_rnn_hidden, n_mlp_hidden, dropout, n_rnn_layers= 100, 128, 128, 128, 0.1, 1
+    model = KQN(n_skills, n_hidden, n_rnn_hidden, n_mlp_hidden, dropout, n_rnn_layers)
+    model = model.to(device)
+    batch_size, n = 2, 200
+    q_seq = torch.randint(0, n_skills, (batch_size, n)).to(device)
+    q = q_seq[:, :-1]
+    qshft = q_seq[:, 1:]
+    r = torch.randint(0, 2, (batch_size, n-1)).to(device)
+    print(q.shape, r.shape, qshft.shape)
+    logits = model(q, r, qshft)
+    print(logits.shape)
