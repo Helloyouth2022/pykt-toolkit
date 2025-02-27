@@ -80,3 +80,15 @@ class DKVMN(Module):
             return p
         else:
             return p, f
+        
+if __name__ == "__main__":
+    num_c, dim_s, size_m = 100, 200, 50
+
+    model = DKVMN(num_c, dim_s, size_m)
+
+    batch_size = 6
+    n = 200
+    q = torch.randint(0, num_c, (batch_size, n))
+    r = torch.randint(0, 2, (batch_size, n))
+    p = model(q, r)
+    print(p.shape)
