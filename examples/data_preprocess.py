@@ -1,6 +1,6 @@
 import os, sys
 
-# 这是为了不通过python 的 pip下载到包管理器中。而是直接通过使用pykt-toolkit文件夹下的pykt包
+# 这是为了不通过python 的 pip下载到包管理器中。而是直接通过使用pykt-toolkit文件夹下的pykt包（方便调式debugging）
 # os.path.dirname(__file__) 得到的是当前程序启动文件的所在的目录的路径
 pykt_toolkit_dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # ...xxx/xxx/pykt-toolkit
 pykt_dir_path = os.path.join(pykt_toolkit_dir_path, 'pykt')  # ...xxx/xxx/pykt-toolkit/pykt
@@ -11,7 +11,7 @@ sys.path.append(pykt_toolkit_dir_path)
 import argparse
 from pykt.preprocess.split_datasets import main as split_concept
 from pykt.preprocess.split_datasets_que import main as split_question
-from pykt.preprocess import data_proprocess, process_raw_data
+from pykt.preprocess import process_raw_data
 
 # 字典 dname2paths包含不同数据集的路径，其中key是数据集的名称，value是对应数据集的路径
 dname2paths = {
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     is_debug = True
     if is_debug:  # 若是直接运行这个脚本，则可以自定义参数（不从终端启动脚本）
-        args.dataset_name = "algebra2005"
+        args.dataset_name = "nips_task34"
         args.file_path = "../data/peiyou/grade3_students_b_200.csv"
         args.min_seq_len = 3
         args.maxlen = 200

@@ -3,7 +3,10 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import numpy as np
-from .utils import ut_mask
+import os, sys
+path_current_file = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(path_current_file)
+from utils import ut_mask
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -48,20 +51,20 @@ class ATKT(nn.Module):
         # print(f"att_w: {att_w.shape}")
 
         if self.fix == True:
-            attn_mask = ut_mask(lstm_output.shape[1])
+            attn_mask = ut_mask(lstm_output.shape[1]).to(device = att_w.device)
             att_w = att_w.transpose(1,2).expand(lstm_output.shape[0], lstm_output.shape[1], lstm_output.shape[1]).clone()
             att_w = att_w.masked_fill_(attn_mask, float("-inf"))
             alphas = torch.nn.functional.softmax(att_w, dim=-1)
-            attn_ouput = torch.bmm(alphas, lstm_output)
+            attn_output = torch.bmm(alphas, lstm_output)
         else: # 原来的官方实现
             alphas=nn.Softmax(dim=1)(att_w)
             # print(f"alphas: {alphas.shape}")    
-            attn_ouput = alphas*lstm_output # 整个seq的attn之和为1，计算前面的的时候，所有的attn都<<1，不会有问题？做的少的时候，历史作用小，做得多的时候，历史作用变大？
+            attn_output = alphas*lstm_output # 整个seq的attn之和为1，计算前面的的时候，所有的attn都<<1，不会有问题？做的少的时候，历史作用小，做得多的时候，历史作用变大？
             # print(f"attn_ouput: {attn_ouput.shape}")
-        attn_output_cum=torch.cumsum(attn_ouput, dim=1)
+        attn_output_cum=torch.cumsum(attn_output, dim=1)
         # print(f"attn_ouput: {attn_ouput}")
         # print(f"attn_output_cum: {attn_output_cum}")
-        attn_output_cum_1=attn_output_cum-attn_ouput
+        attn_output_cum_1=attn_output_cum - attn_output
         # print(f"attn_output_cum_1: {attn_output_cum_1}")
         # print(f"lstm_output: {lstm_output}")
 
@@ -82,7 +85,7 @@ class ATKT(nn.Module):
         skill_answer=torch.cat((skill_embedding,answer_embedding), 2)
         answer_skill=torch.cat((answer_embedding,skill_embedding), 2)
         
-        answer=answer.unsqueeze(2).expand_as(skill_answer)
+        answer=answer.unsqueeze(2).expand_as(skill_answer) 
         
         skill_answer_embedding=torch.where(answer==1, skill_answer, answer_skill)
         
@@ -112,3 +115,42 @@ def _l2_normalize_adv(d):
         d = d.cpu().numpy()
     d /= (np.sqrt(np.sum(d ** 2, axis=(1, 2))).reshape((-1, 1, 1)) + 1e-16)
     return torch.from_numpy(d)
+
+
+if __name__ == '__main__':
+    from torch.nn.functional import one_hot, binary_cross_entropy
+    from torch.autograd import Variable, grad
+
+    def cal_loss(model, ys, r, rshft, sm, preloss=[]):
+        y = torch.masked_select(ys[0], sm)
+        t = torch.masked_select(rshft, sm)
+        loss = binary_cross_entropy(y.double(), t.double())
+        return loss
+
+    num_c, skill_dim, answer_dim, hidden_dim, attention_dim=100, 256, 96, 80, 80
+    model = ATKT(num_c, skill_dim, answer_dim, hidden_dim, attention_dim)
+
+    batch_size = 5
+    n = 200
+    skill = torch.randint(0, num_c, (batch_size, n ))
+    answer = torch.randint(0, 2, (batch_size, n))
+
+    c = skill[:, :-1]
+    r = answer[:, :-1]
+    cshft = skill[:, 1:]
+    rshft = answer[:, 1:]
+    sm = torch.randint(0, 2, (batch_size, n - 1)).to(dtype=torch.bool)
+
+    y, features = model(c.long(), r.long())
+    y = (y * one_hot(cshft.long(), model.num_c)).sum(-1)
+    loss = cal_loss(model, [y], r, rshft, sm)
+    # at
+    features_grad = grad(loss, features, retain_graph=True)
+    p_adv = torch.FloatTensor(model.epsilon * _l2_normalize_adv(features_grad[0].data))
+    p_adv = Variable(p_adv).to(device)
+    pred_res, _ = model(c.long(), r.long(), p_adv)
+    # second loss
+    pred_res = (pred_res * one_hot(cshft.long(), model.num_c)).sum(-1)
+    adv_loss = cal_loss(model, [pred_res], r, rshft, sm)
+    loss = loss + model.beta * adv_loss
+    print(loss)
