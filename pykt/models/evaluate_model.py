@@ -4,7 +4,12 @@ from torch import nn
 from torch.nn.functional import one_hot
 from sklearn import metrics
 from pykt.config import que_type_models
-from ..datasets.lpkt_utils import generate_time2idx
+import os, sys
+path_current_file = os.path.dirname(os.path.abspath(__file__))
+dir_last = os.path.abspath(os.path.join(path_current_file, ".."))
+datasets_pykt_path = os.path.abspath(os.path.join(dir_last, "datasets"))
+sys.path.append(datasets_pykt_path)
+from lpkt_utils import generate_time2idx
 import pandas as pd
 import csv
 

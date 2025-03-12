@@ -5,8 +5,9 @@ from torch.autograd import Variable
 import numpy as np
 import os, sys
 path_current_file = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(path_current_file)
-from utils import ut_mask
+dir_last = os.path.abspath(os.path.join(path_current_file, ".."))
+sys.path.append(dir_last)
+from models.utils import ut_mask
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

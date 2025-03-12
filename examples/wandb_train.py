@@ -7,7 +7,7 @@ from torch.optim import SGD, Adam
 import copy
 
 # 这是为了不通过python 的 pip下载到包管理器中。而是直接通过使用pykt-toolkit文件夹下的pykt包
-# os.path.dirname(__file__) 得到的是当前程序启动文件的所在的目录的路径
+# os.path.dirname(__file__) 得到的是当前脚本的所在的目录的路径
 pykt_toolkit_dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # ...xxx/xxx/pykt-toolkit
 pykt_dir_path = os.path.join(pykt_toolkit_dir_path, 'pykt')  # ...xxx/xxx/pykt-toolkit/pykt
 

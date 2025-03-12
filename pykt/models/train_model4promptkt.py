@@ -7,7 +7,7 @@ from torch.nn.utils.clip_grad import clip_grad_norm_
 import numpy as np
 from .evaluate_model import evaluate
 from torch.autograd import Variable, grad
-from ..utils.utils import debug_print
+from pykt.utils.utils import debug_print
 from pykt.config import que_type_models
 import pickle
 from torch.utils.data import DataLoader

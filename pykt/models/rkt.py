@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from enum import IntEnum
-from ..utils.utils import debug_print
+from pykt.utils.utils import debug_print
 torch.set_printoptions(precision=4, sci_mode=False)
 torch.set_printoptions(profile="full")
 

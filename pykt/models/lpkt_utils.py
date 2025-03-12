@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data import TensorDataset
 import torch.nn.functional as F
 from sklearn import metrics
-from ..datasets.lpkt_utils import generate_time2idx
+from pykt.datasets.lpkt_utils import generate_time2idx
 
 device = "cpu" if not torch.cuda.is_available() else "cuda"
 

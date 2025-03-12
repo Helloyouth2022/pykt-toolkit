@@ -50,6 +50,8 @@ The hyper parameter tunning results of our experiments about all the DLKT models
 17. https://github.com/yxonic/DTransformer
 18. https://github.com/lilstrawberry/ReKT
 
+19. https://github.com/DevilYangS/ENAS-KT
+
 ### Papers
 
 1. DKT: Deep knowledge tracing 
@@ -78,6 +80,7 @@ The hyper parameter tunning results of our experiments about all the DLKT models
 24. extraKT: Extending Context Window of Attention Based Knowledge Tracing Models via Length Extrapolation
 25. ReKT: Revisiting Knowledge Tracing: A Simple and Powerful Model
 
+26. ENAS-KT: Evolutionary Neural Architecture Search for Transformer in Knowledge Tracing
 
 ## Citation
 

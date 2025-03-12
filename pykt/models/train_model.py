@@ -7,7 +7,7 @@ import numpy as np
 from .evaluate_model import evaluate
 from torch.autograd import Variable, grad
 from .atkt import _l2_normalize_adv
-from ..utils.utils import debug_print
+from utils.utils import debug_print
 from pykt.config import que_type_models
 import pandas as pd
 
